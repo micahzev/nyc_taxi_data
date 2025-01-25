@@ -1,0 +1,36 @@
+networks:
+  my_network:
+    driver: bridge
+
+services:
+  pgdatabase:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=ny_taxi
+    networks:
+      - my_network
+    volumes:
+      -  dtc_postgres_volume_local:/var/lib/postgresql/data:rw
+    ports:
+      - "5432:5432"
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=root
+    ports:
+      - "8080:80"
+    depends_on:
+      - pgdatabase
+  # python_app:
+  #   build: ./
+  #   command: python ingest_data.py --user root --password root --host pgdatabase --port 5432 --db ny_taxi --table_name green_taxi_data --csv_url http://192.168.9.186:8000/green_tripdata_2019-10.csv
+
+
+
+volumes:
+  dtc_postgres_volume_local:
+    driver: local
+
